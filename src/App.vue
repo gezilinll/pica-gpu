@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { add } from 'pica-gpu'
+import { add, resize } from 'pica-gpu'
 
 const imageUrl = ref<string | null>(null)
 const canvasRef = ref<HTMLCanvasElement | null>(null)
@@ -16,19 +16,47 @@ const handleImageUpload = (event: Event) => {
       imageUrl.value = e.target?.result as string
       const img = new Image()
       img.onload = () => {
+        // 创建临时 canvas
+        const tempCanvas = document.createElement('canvas')
+        const tempCtx = tempCanvas.getContext('2d')
+        if (!tempCtx) return
+
+        // 设置临时 canvas 尺寸为原始图片尺寸
+        tempCanvas.width = img.width
+        tempCanvas.height = img.height
+        tempCtx.drawImage(img, 0, 0)
+
+        // 调用 resize 函数
+        const targetWidth = 293
+        const targetHeight = 439
+        const pixelData = resize(tempCanvas, {
+          filter: 'hamming',
+          targetWidth,
+          targetHeight
+        })
+
+        // 将处理后的像素数据绘制到页面 canvas
         const canvas = canvasRef.value
         if (!canvas) return
         
         const ctx = canvas.getContext('2d')
         if (!ctx) return
 
-        const targetWidth = 540
-        const scale = targetWidth / img.width
-        const targetHeight = img.height * scale
+        // 设置页面 canvas 尺寸
+        const displayWidth = 540
+        const scale = displayWidth / targetWidth
+        const displayHeight = targetHeight * scale
 
-        canvas.width = targetWidth
-        canvas.height = targetHeight
-        ctx.drawImage(img, 0, 0, targetWidth, targetHeight)
+        canvas.width = displayWidth
+        canvas.height = displayHeight
+
+        // 创建 ImageData 并绘制
+        const imageData = new ImageData(
+          new Uint8ClampedArray(pixelData),
+          targetWidth,
+          targetHeight
+        )
+        ctx.putImageData(imageData, 0, 0, 0, 0, displayWidth, displayHeight)
       }
       img.src = imageUrl.value
     }
