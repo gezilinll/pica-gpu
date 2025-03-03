@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      pica-gpu:
+        specifier: workspace:*
+        version: link:lib
       vue:
         specifier: ^3.4.15
         version: 3.5.13(typescript@5.8.2)
@@ -24,6 +27,12 @@ importers:
       vue-tsc:
         specifier: ^1.8.27
         version: 1.8.27(typescript@5.8.2)
+
+  lib:
+    devDependencies:
+      typescript:
+        specifier: ^5.2.2
+        version: 5.8.2
 
 packages:
 

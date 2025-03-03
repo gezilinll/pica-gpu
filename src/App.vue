@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { add } from 'pica-gpu'
 
 const imageUrl = ref<string | null>(null)
 const canvasRef = ref<HTMLCanvasElement | null>(null)
+
+// 测试 add 方法
+console.log('1 + 2 =', add(1, 2))
 
 const handleImageUpload = (event: Event) => {
   const input = event.target as HTMLInputElement

@@ -1,15 +1,21 @@
 {
-  "name": "pica-gpu",
+  "name": "pica-gpu-root",
   "private": true,
   "version": "0.0.1",
   "type": "module",
+  "workspaces": [
+    "lib"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:lib": "cd lib && pnpm build",
+    "dev:lib": "cd lib && pnpm dev"
   },
   "dependencies": {
-    "vue": "^3.4.15"
+    "vue": "^3.4.15",
+    "pica-gpu": "workspace:*"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.3",
