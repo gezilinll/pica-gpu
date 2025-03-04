@@ -23,16 +23,16 @@
     "canvas",
     "typescript"
   ],
-  "author": "Your Name",
+  "author": "gezilinll",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yourusername/pica-gpu.git"
+    "url": "git+https://github.com/gezilinll/pica-gpu.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/pica-gpu/issues"
+    "url": "https://github.com/gezilinll/pica-gpu/issues"
   },
-  "homepage": "https://github.com/yourusername/pica-gpu#readme",
+  "homepage": "https://github.com/gezilinll/pica-gpu#readme",
   "devDependencies": {
     "typescript": "^5.2.2"
   }
