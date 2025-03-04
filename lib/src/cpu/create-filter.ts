@@ -1,3 +1,5 @@
+import { ResizeOptions } from "../definition";
+
 const filters = {
     // Nearest neibor
     box: {
@@ -60,7 +62,7 @@ function toFixedPoint(num: number) {
     return Math.round(num * ((1 << FIXED_FRAC_BITS) - 1));
 }
 
-export function createFilters(filter: 'hamming' | 'lanczos2', srcSize: number, destSize: number, scale: number, offset: number) {
+export function createFilters(filter: ResizeOptions['filter'], srcSize: number, destSize: number, scale: number, offset: number) {
 
     var filterFunction = filters[filter].fn;
 

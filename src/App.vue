@@ -16,27 +16,22 @@ const cpuTime = ref<number>(0)
 const handleImageUpload = (event: Event) => {
   const input = event.target as HTMLInputElement
   if (input.files && input.files[0]) {
-    // 保存原始文件名（不包含扩展名）
     originalFileName.value = input.files[0].name.replace(/\.[^/.]+$/, '')
     const reader = new FileReader()
     reader.onload = async (e) => {
       imageUrl.value = e.target?.result as string
       const img = new Image()
       img.onload = async () => {
-        // 创建临时 canvas
         const tempCanvas = document.createElement('canvas')
         const tempCtx = tempCanvas.getContext('2d')
         if (!tempCtx) return
 
-        // 设置临时 canvas 尺寸为原始图片尺寸
         tempCanvas.width = img.width
         tempCanvas.height = img.height
         tempCtx.drawImage(img, 0, 0)
 
-        // 保存源图片 canvas
         sourceCanvas.value = tempCanvas
 
-        // 处理图片
         await processImage()
       }
       img.src = imageUrl.value
@@ -48,8 +43,6 @@ const handleImageUpload = (event: Event) => {
 const processImage = async () => {
   if (!sourceCanvas.value) return
 
-
-  // 计算目标尺寸
   const targetWidth = 480
   const targetHeight = Math.round(targetWidth * sourceCanvas.value.height / sourceCanvas.value.width)
 

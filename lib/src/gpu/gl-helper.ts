@@ -3,7 +3,7 @@ function compileShader(gl: WebGL2RenderingContext, type: number, source: string)
     gl.shaderSource(shader, source);
     gl.compileShader(shader);
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        console.error('编译着色器错误：', gl.getShaderInfoLog(shader));
+        console.error('compile shader error:', gl.getShaderInfoLog(shader));
         gl.deleteShader(shader);
         return null;
     }
@@ -18,7 +18,7 @@ export function createProgram(gl: WebGL2RenderingContext, vsSource: string, fsSo
     gl.attachShader(program, fragmentShader);
     gl.linkProgram(program);
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-        console.error('程序连接错误：', gl.getProgramInfoLog(program));
+        console.error('link program error:', gl.getProgramInfoLog(program));
         return null;
     }
     return {
