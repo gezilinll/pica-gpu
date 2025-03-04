@@ -7,7 +7,7 @@ const imageUrl = ref<string | null>(null)
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 const picaCanvasRef = ref<HTMLCanvasElement | null>(null)
 const pica = new Pica()
-const currentFilter = ref<'hamming' | 'lanczos2'>('hamming')
+const currentFilter = ref<'box' | 'hamming' | 'lanczos2'  | 'lanczos3' | 'mks2013'>('mks2013')
 const sourceCanvas = ref<HTMLCanvasElement | null>(null)
 
 const handleImageUpload = (event: Event) => {
@@ -49,10 +49,9 @@ const processImage = async () => {
 
   // 计算目标尺寸
   const targetWidth = 480
-  const targetHeight = targetWidth * tempCanvas.height / tempCanvas.width
+  const targetHeight = Math.round(targetWidth * tempCanvas.height / tempCanvas.width)
 
   try {
-    // 使用 WebGL 2.0 版本处理左侧画布
     const pixelData = resize(tempCanvas, {
       filter: currentFilter.value,
       targetWidth,
@@ -94,7 +93,18 @@ const processImage = async () => {
   })
 }
 
-const applyFilter = (filter: 'hamming' | 'lanczos2') => {
+const handleCanvasClick = () => {
+  // 触发文件选择
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = 'image/*'
+  input.onchange = (event) => {
+    handleImageUpload(event)
+  }
+  input.click()
+}
+
+const applyFilter = (filter: 'hamming' | 'lanczos2' | 'box' | 'lanczos3' | 'mks2013') => {
   currentFilter.value = filter
   // 如果已经有图片，重新处理图片
   if (sourceCanvas.value) {
@@ -123,6 +133,13 @@ const applyFilter = (filter: 'hamming' | 'lanczos2') => {
           <span class="filter-label">Resize Filter:</span>
           <button 
             class="filter-button" 
+            :class="{ 'filter-button-active': currentFilter === 'box' }"
+            @click="applyFilter('box')"
+          >
+            Box
+          </button>
+          <button 
+            class="filter-button" 
             :class="{ 'filter-button-active': currentFilter === 'hamming' }"
             @click="applyFilter('hamming')"
           >
@@ -135,15 +152,29 @@ const applyFilter = (filter: 'hamming' | 'lanczos2') => {
           >
             Lanczos2
           </button>
+          <button 
+            class="filter-button" 
+            :class="{ 'filter-button-active': currentFilter === 'lanczos3' }"
+            @click="applyFilter('lanczos3')"
+          >
+            Lanczos3
+          </button>
+          <button 
+            class="filter-button" 
+            :class="{ 'filter-button-active': currentFilter === 'mks2013' }"
+            @click="applyFilter('mks2013')"
+          >
+            MKS2013
+          </button>
         </div>
         <div class="canvas-section">
           <div class="canvas-item">
             <p class="canvas-label">Pica-GPU</p>
-            <canvas ref="canvasRef" class="preview-canvas"></canvas>
+            <canvas ref="canvasRef" class="preview-canvas" @click="handleCanvasClick"></canvas>
           </div>
           <div class="canvas-item">
             <p class="canvas-label">Pica</p>
-            <canvas ref="picaCanvasRef" class="preview-canvas"></canvas>
+            <canvas ref="picaCanvasRef" class="preview-canvas" @click="handleCanvasClick"></canvas>
           </div>
         </div>
       </div>
@@ -286,6 +317,12 @@ body {
   border-radius: 4px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 -4px 6px rgba(0, 0, 0, 0.1);
   background-color: #f8fafc;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.preview-canvas:hover {
+  transform: scale(1.02);
 }
 
 @media (max-width: 768px) {

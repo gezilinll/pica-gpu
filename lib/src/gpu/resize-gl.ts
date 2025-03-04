@@ -5,8 +5,8 @@ import { generateHorizontalShader, generateVerticalShader, getResizeWindow, vsSo
 export function resizeGL(source: HTMLCanvasElement, options: ResizeOptions) {
     const canvas = document.createElement('canvas');
     const gl = canvas.getContext('webgl2')!;
-    const targetWidth = options.targetWidth;
-    const targetHeight = options.targetHeight;
+    const targetWidth = Math.round(options.targetWidth);
+    const targetHeight = Math.round(options.targetHeight);
 
     const sourceTexture = createTextureFromImage(gl, source);
     const srcWidth = source.width;

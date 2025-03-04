@@ -1,3 +1,4 @@
+import { ResizeOptions } from "../definition";
 
 export const vsSource =
     `#version 300 es
@@ -80,7 +81,12 @@ const fsVertical = `#version 300 es
  }
  `;
 
- const hammingFilter = `float resizeFilter(float x) {
+const boxFilter = `float resizeFilter(float x) {
+    x = abs(x);
+    return (x < 0.5) ? 1.0 : 0.0;
+ }`
+
+const hammingFilter = `float resizeFilter(float x) {
     x = abs(x);
     if(x >= 1.0) return 0.0;
     if(x < 1.19209290E-7) return 1.0;
@@ -96,24 +102,46 @@ const lanczos2Filter = `float resizeFilter(float x) {
    return (sin(xpi) / xpi) * (sin(xpi / 2.0) / (xpi / 2.0));
  }`
 
+const lanczos3Filter = `float resizeFilter(float x) {
+    x = abs(x);
+    if(x >= 3.0) return 0.0;
+    if(x < 1.19209290E-7) return 1.0;
+    float xpi = x * PI;
+    return (sin(xpi) / xpi) * sin(xpi / 3.0) / (xpi / 3.0);
+  }`
+
+const mks2013Filter = `float resizeFilter(float x) {
+    x = abs(x);
+    if (x >= 2.5) { return 0.0; }
+    if (x >= 1.5) { return -0.125 * (x - 2.5) * (x - 2.5); }
+    if (x >= 0.5) { return 0.25 * (4.0 * x * x - 11.0 * x + 7.0); }
+    return 1.0625 - 1.75 * x * x;
+  }`
+
 const filters = {
+    box: boxFilter,
     hamming: hammingFilter,
-    lanczos2: lanczos2Filter
+    lanczos2: lanczos2Filter,
+    lanczos3: lanczos3Filter,
+    mks2013: mks2013Filter
 }
 
 const windows = {
+    box: 0.5,
     hamming: 1.0,
-    lanczos2: 2.0
+    lanczos2: 2.0,
+    lanczos3: 3.0,
+    mks2013: 2.5
 }
 
-export function generateHorizontalShader(filterFunction: 'hamming' | 'lanczos2') {
+export function generateHorizontalShader(filterFunction: ResizeOptions['filter']) {
     return fsHorizontal.replace('/* FILTER_FUNCTION */', filters[filterFunction]);
 }
 
-export function generateVerticalShader(filterFunction: 'hamming' | 'lanczos2') {
+export function generateVerticalShader(filterFunction: ResizeOptions['filter']) {
     return fsVertical.replace('/* FILTER_FUNCTION */', filters[filterFunction]);
 }
 
-export function getResizeWindow(filterFunction: 'hamming' | 'lanczos2') {
+export function getResizeWindow(filterFunction: ResizeOptions['filter']) {
     return windows[filterFunction];
 }   
