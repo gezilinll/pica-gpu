@@ -9,10 +9,13 @@ const picaCanvasRef = ref<HTMLCanvasElement | null>(null)
 const pica = new Pica()
 const currentFilter = ref<'box' | 'hamming' | 'lanczos2'  | 'lanczos3' | 'mks2013'>('mks2013')
 const sourceCanvas = ref<HTMLCanvasElement | null>(null)
+const originalFileName = ref<string>('')
 
 const handleImageUpload = (event: Event) => {
   const input = event.target as HTMLInputElement
   if (input.files && input.files[0]) {
+    // 保存原始文件名（不包含扩展名）
+    originalFileName.value = input.files[0].name.replace(/\.[^/.]+$/, '')
     const reader = new FileReader()
     reader.onload = async (e) => {
       imageUrl.value = e.target?.result as string
@@ -111,6 +114,22 @@ const applyFilter = (filter: 'hamming' | 'lanczos2' | 'box' | 'lanczos3' | 'mks2
     processImage()
   }
 }
+
+const downloadImages = () => {
+  if (!canvasRef.value || !picaCanvasRef.value || !originalFileName.value) return
+
+  // 下载 GPU 版本
+  const gpuLink = document.createElement('a')
+  gpuLink.download = `${originalFileName.value}_gpu.png`
+  gpuLink.href = canvasRef.value.toDataURL('image/png')
+  gpuLink.click()
+
+  // 下载 CPU 版本
+  const cpuLink = document.createElement('a')
+  cpuLink.download = `${originalFileName.value}_cpu.png`
+  cpuLink.href = picaCanvasRef.value.toDataURL('image/png')
+  cpuLink.click()
+}
 </script>
 
 <template>
@@ -165,6 +184,12 @@ const applyFilter = (filter: 'hamming' | 'lanczos2' | 'box' | 'lanczos3' | 'mks2
             @click="applyFilter('mks2013')"
           >
             MKS2013
+          </button>
+          <button 
+            class="download-button"
+            @click="downloadImages"
+          >
+            下载图片
           </button>
         </div>
         <div class="canvas-section">
@@ -323,6 +348,23 @@ body {
 
 .preview-canvas:hover {
   transform: scale(1.02);
+}
+
+.download-button {
+  background-color: #10b981;
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: none;
+  margin-left: auto;
+}
+
+.download-button:hover {
+  background-color: #059669;
+  transform: translateY(-1px);
 }
 
 @media (max-width: 768px) {
