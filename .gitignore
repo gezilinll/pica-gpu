@@ -39,3 +39,6 @@ coverage
 *.tsbuildinfo
 vite.config.js
 vite.config.d.ts
+
+lib/README.md
+lib/LICENSE

@@ -1,6 +1,6 @@
 # pica-gpu
 
-**GPU accelerated image resizer based on Pica**
+**GPU accelerated image resizer**
 
 [![npm version](https://img.shields.io/npm/v/pica-gpu.svg)](https://www.npmjs.com/package/pica-gpu)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
