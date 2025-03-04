@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "type": "module",
   "main": "dist/index.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
@@ -10,8 +11,28 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "prebuild": "rm -rf dist"
+    "prebuild": "rm -rf dist",
+    "prepublishOnly": "pnpm build",
+    "publish": "npm publish --access public"
   },
+  "keywords": [
+    "image",
+    "resize",
+    "webgl",
+    "gpu",
+    "canvas",
+    "typescript"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/pica-gpu.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/pica-gpu/issues"
+  },
+  "homepage": "https://github.com/yourusername/pica-gpu#readme",
   "devDependencies": {
     "typescript": "^5.2.2"
   }
