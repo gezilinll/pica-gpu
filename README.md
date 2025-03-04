@@ -31,6 +31,9 @@ Pica-gpu implements a full set of filtering algorithms (including mks2013 and ot
 - **Reduced CPU and memory usage**  
   Avoids creating extra buffers by performing operations on the GPU.
 
+- **Simpler implementation**  
+  Unlike Pica, pica-gpu does not need to handle complexities such as web workers; it only requires WebGL support.
+
 - **Simple API**  
   Designed to be a drop-in alternative to Pica with a similar API surface.
 
