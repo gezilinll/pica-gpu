@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { add, resize } from 'pica-gpu'
+import Pica from 'pica'
 
 const imageUrl = ref<string | null>(null)
 const canvasRef = ref<HTMLCanvasElement | null>(null)
+const picaCanvasRef = ref<HTMLCanvasElement | null>(null)
+const pica = new Pica()
 
 // 测试 add 方法
 console.log('1 + 2 =', add(1, 2))
@@ -12,10 +15,10 @@ const handleImageUpload = (event: Event) => {
   const input = event.target as HTMLInputElement
   if (input.files && input.files[0]) {
     const reader = new FileReader()
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       imageUrl.value = e.target?.result as string
       const img = new Image()
-      img.onload = () => {
+      img.onload = async () => {
         // 创建临时 canvas
         const tempCanvas = document.createElement('canvas')
         const tempCtx = tempCanvas.getContext('2d')
@@ -26,29 +29,26 @@ const handleImageUpload = (event: Event) => {
         tempCanvas.height = img.height
         tempCtx.drawImage(img, 0, 0)
 
-        // 调用 resize 函数
-        const targetWidth = 293
-        const targetHeight = 439
+        // 计算目标尺寸
+        const targetWidth = 480
+        const targetHeight = targetWidth * img.height / img.width
+
+        // 使用 pica-gpu 处理左侧画布
         const pixelData = resize(tempCanvas, {
           filter: 'hamming',
           targetWidth,
           targetHeight
         })
 
-        // 将处理后的像素数据绘制到页面 canvas
+        // 左侧画布：将处理后的像素数据绘制到页面 canvas
         const canvas = canvasRef.value
         if (!canvas) return
         
         const ctx = canvas.getContext('2d')
         if (!ctx) return
 
-        // 设置页面 canvas 尺寸
-        const displayWidth = 540
-        const scale = displayWidth / targetWidth
-        const displayHeight = targetHeight * scale
-
-        canvas.width = displayWidth
-        canvas.height = displayHeight
+        canvas.width = targetWidth
+        canvas.height = targetHeight
 
         // 创建 ImageData 并绘制
         const imageData = new ImageData(
@@ -56,7 +56,21 @@ const handleImageUpload = (event: Event) => {
           targetWidth,
           targetHeight
         )
-        ctx.putImageData(imageData, 0, 0, 0, 0, displayWidth, displayHeight)
+        ctx.putImageData(imageData, 0, 0)
+
+        // 右侧画布：使用 pica 处理
+        const picaCanvas = picaCanvasRef.value
+        if (!picaCanvas) return
+
+        picaCanvas.width = targetWidth
+        picaCanvas.height = targetHeight
+
+        // 使用 pica 进行缩放
+        await pica.resize(tempCanvas, picaCanvas, {
+          unsharpAmount: 80,
+          unsharpRadius: 0.6,
+          unsharpThreshold: 2
+        })
       }
       img.src = imageUrl.value
     }
@@ -91,7 +105,16 @@ const applyFilter = (filter: 'hamming' | 'lanczos2') => {
           <button class="filter-button" @click="applyFilter('hamming')">Hamming</button>
           <button class="filter-button" @click="applyFilter('lanczos2')">Lanczos2</button>
         </div>
-        <canvas ref="canvasRef" class="preview-canvas"></canvas>
+        <div class="canvas-section">
+          <div class="canvas-item">
+            <p class="canvas-label">Pica-GPU</p>
+            <canvas ref="canvasRef" class="preview-canvas"></canvas>
+          </div>
+          <div class="canvas-item">
+            <p class="canvas-label">Pica</p>
+            <canvas ref="picaCanvasRef" class="preview-canvas"></canvas>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -108,7 +131,7 @@ const applyFilter = (filter: 'hamming' | 'lanczos2') => {
 
 body {
   font-family: 'JetBrains Mono', monospace;
-  background-color: #ffffff;
+  background-color: #f3f4f6;
   color: #333333;
   min-height: 100vh;
   display: flex;
@@ -118,75 +141,100 @@ body {
 
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
   padding: 2rem;
 }
 
 .content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
 }
 
-.upload-section, .image-section {
+.upload-section {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
+  min-height: 300px;
+  justify-content: center;
 }
 
 .upload-button {
   background-color: #ffffff;
   color: #2563eb;
-  padding: 0.8rem 1.5rem;
-  border-radius: 4px;
+  padding: 1rem 2rem;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
   transition: all 0.3s ease;
-  border: 2px solid #2563eb;
-  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.1);
+  border: 2px dashed #2563eb;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .upload-button:hover {
-  background-color: #2563eb;
-  color: #ffffff;
+  background-color: #f0f7ff;
   transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
 }
 
 .hidden {
   display: none;
 }
 
+.image-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
 .filter-section {
   display: flex;
-  align-items: center;
   gap: 1rem;
+  align-items: center;
 }
 
 .filter-label {
-  color: #666666;
   font-size: 0.9rem;
+  color: #666666;
 }
 
 .filter-button {
   background-color: #ffffff;
   color: #2563eb;
   padding: 0.5rem 1rem;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
   transition: all 0.3s ease;
-  border: 2px solid #2563eb;
-  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.1);
+  border: 2px dashed #2563eb;
 }
 
 .filter-button:hover {
-  background-color: #2563eb;
-  color: #ffffff;
+  background-color: #f0f7ff;
   transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+}
+
+.canvas-section {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.canvas-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.canvas-label {
+  font-size: 0.9rem;
+  color: #666666;
 }
 
 .preview-canvas {
@@ -195,5 +243,11 @@ body {
   border-radius: 4px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 -4px 6px rgba(0, 0, 0, 0.1);
   background-color: #f8fafc;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
 }
 </style> 
