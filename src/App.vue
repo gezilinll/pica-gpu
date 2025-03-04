@@ -7,6 +7,8 @@ const imageUrl = ref<string | null>(null)
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 const picaCanvasRef = ref<HTMLCanvasElement | null>(null)
 const pica = new Pica()
+const currentFilter = ref<'hamming' | 'lanczos2'>('hamming')
+const sourceCanvas = ref<HTMLCanvasElement | null>(null)
 
 // 测试 add 方法
 console.log('1 + 2 =', add(1, 2))
@@ -29,48 +31,11 @@ const handleImageUpload = (event: Event) => {
         tempCanvas.height = img.height
         tempCtx.drawImage(img, 0, 0)
 
-        // 计算目标尺寸
-        const targetWidth = 480
-        const targetHeight = targetWidth * img.height / img.width
+        // 保存源图片 canvas
+        sourceCanvas.value = tempCanvas
 
-        // 使用 pica-gpu 处理左侧画布
-        const pixelData = resize(tempCanvas, {
-          filter: 'hamming',
-          targetWidth,
-          targetHeight
-        })
-
-        // 左侧画布：将处理后的像素数据绘制到页面 canvas
-        const canvas = canvasRef.value
-        if (!canvas) return
-        
-        const ctx = canvas.getContext('2d')
-        if (!ctx) return
-
-        canvas.width = targetWidth
-        canvas.height = targetHeight
-
-        // 创建 ImageData 并绘制
-        const imageData = new ImageData(
-          new Uint8ClampedArray(pixelData),
-          targetWidth,
-          targetHeight
-        )
-        ctx.putImageData(imageData, 0, 0)
-
-        // 右侧画布：使用 pica 处理
-        const picaCanvas = picaCanvasRef.value
-        if (!picaCanvas) return
-
-        picaCanvas.width = targetWidth
-        picaCanvas.height = targetHeight
-
-        // 使用 pica 进行缩放
-        await pica.resize(tempCanvas, picaCanvas, {
-          unsharpAmount: 80,
-          unsharpRadius: 0.6,
-          unsharpThreshold: 2
-        })
+        // 处理图片
+        await processImage()
       }
       img.src = imageUrl.value
     }
@@ -78,9 +43,61 @@ const handleImageUpload = (event: Event) => {
   }
 }
 
+const processImage = async () => {
+  if (!sourceCanvas.value) return
+
+  const tempCanvas = sourceCanvas.value
+  const img = tempCanvas.getContext('2d')?.getImageData(0, 0, tempCanvas.width, tempCanvas.height)
+  if (!img) return
+
+  // 计算目标尺寸
+  const targetWidth = 480
+  const targetHeight = targetWidth * tempCanvas.height / tempCanvas.width
+
+  // 使用 pica-gpu 处理左侧画布
+  const pixelData = resize(tempCanvas, {
+    filter: currentFilter.value,
+    targetWidth,
+    targetHeight
+  })
+
+  // 左侧画布：将处理后的像素数据绘制到页面 canvas
+  const canvas = canvasRef.value
+  if (!canvas) return
+  
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+
+  canvas.width = targetWidth
+  canvas.height = targetHeight
+
+  // 创建 ImageData 并绘制
+  const imageData = new ImageData(
+    new Uint8ClampedArray(pixelData),
+    targetWidth,
+    targetHeight
+  )
+  ctx.putImageData(imageData, 0, 0)
+
+  // 右侧画布：使用 pica 处理
+  const picaCanvas = picaCanvasRef.value
+  if (!picaCanvas) return
+
+  picaCanvas.width = targetWidth
+  picaCanvas.height = targetHeight
+
+  // 使用 pica 进行缩放
+  await pica.resize(tempCanvas, picaCanvas, {
+    filter: currentFilter.value
+  })
+}
+
 const applyFilter = (filter: 'hamming' | 'lanczos2') => {
-  // TODO: 实现滤镜效果
-  console.log('Applying filter:', filter)
+  currentFilter.value = filter
+  // 如果已经有图片，重新处理图片
+  if (sourceCanvas.value) {
+    processImage()
+  }
 }
 </script>
 
@@ -102,8 +119,20 @@ const applyFilter = (filter: 'hamming' | 'lanczos2') => {
       <div v-else class="image-section">
         <div class="filter-section">
           <span class="filter-label">Resize Filter:</span>
-          <button class="filter-button" @click="applyFilter('hamming')">Hamming</button>
-          <button class="filter-button" @click="applyFilter('lanczos2')">Lanczos2</button>
+          <button 
+            class="filter-button" 
+            :class="{ 'filter-button-active': currentFilter === 'hamming' }"
+            @click="applyFilter('hamming')"
+          >
+            Hamming
+          </button>
+          <button 
+            class="filter-button" 
+            :class="{ 'filter-button-active': currentFilter === 'lanczos2' }"
+            @click="applyFilter('lanczos2')"
+          >
+            Lanczos2
+          </button>
         </div>
         <div class="canvas-section">
           <div class="canvas-item">
@@ -215,6 +244,18 @@ body {
 
 .filter-button:hover {
   background-color: #f0f7ff;
+  transform: translateY(-1px);
+}
+
+.filter-button-active {
+  background-color: #2563eb;
+  color: #ffffff;
+  border-style: solid;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+}
+
+.filter-button-active:hover {
+  background-color: #1d4ed8;
   transform: translateY(-1px);
 }
 
