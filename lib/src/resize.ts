@@ -4,19 +4,17 @@ import { generateHorizontalShader, generateVerticalShader, getResizeWindow, vsSo
 export interface ResizeOptions {
     targetWidth: number;
     targetHeight: number;
-    drawToCanvas?: HTMLCanvasElement;
     filter: 'box' | 'hamming' | 'lanczos2' | 'lanczos3' | 'mks2013';
 }
 
-export function resize(source: HTMLCanvasElement, options: ResizeOptions) {
-    const canvas = options.drawToCanvas ?? document.createElement('canvas');
-    const gl = canvas.getContext('webgl2')!;
+export function resize(from: HTMLCanvasElement, to: HTMLCanvasElement, options: ResizeOptions) {
+    const gl = to.getContext('webgl2')!;
     const targetWidth = Math.round(options.targetWidth);
     const targetHeight = Math.round(options.targetHeight);
 
-    const sourceTexture = createTextureFromImage(gl, source);
-    const srcWidth = source.width;
-    const srcHeight = source.height;
+    const sourceTexture = createTextureFromImage(gl, from);
+    const srcWidth = from.width;
+    const srcHeight = from.height;
     const scaleX = targetWidth / srcWidth;
     const scaleY = targetHeight / srcHeight;
     const baseRadius = getResizeWindow(options.filter);
@@ -70,6 +68,4 @@ export function resize(source: HTMLCanvasElement, options: ResizeOptions) {
     gl.deleteShader(compiledVertical.fragmentShader);
     gl.deleteFramebuffer(horizontalFramebuffer);
     gl.deleteBuffer(quadBuffer);
-
-    return canvas;
 }

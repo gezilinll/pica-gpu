@@ -53,9 +53,8 @@ const processImage = async () => {
     canvas.height = targetHeight
 
     const gpuStart = performance.now()
-    resize(sourceCanvas.value, {
+    resize(sourceCanvas.value, canvas, {
       filter: currentFilter.value,
-      drawToCanvas: canvas,
       targetWidth,
       targetHeight
     })
