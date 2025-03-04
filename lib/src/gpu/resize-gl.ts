@@ -21,7 +21,8 @@ export function resizeGL(source: HTMLCanvasElement, options: ResizeOptions) {
 
     const horizontalTexture = createEmptyTexture(gl, targetWidth, srcHeight);
     const horizontalFramebuffer = createFramebuffer(gl, horizontalTexture);
-    const horizontalProgram = createProgram(gl, vsSource, generateHorizontalShader(options.filter))!;
+    const compiledHorizontal = createProgram(gl, vsSource, generateHorizontalShader(options.filter))!;
+    const horizontalProgram = compiledHorizontal.program;
     gl.useProgram(horizontalProgram);
     useDefaultQuadBuffer(gl, horizontalProgram, quadBuffer, "a_position", "a_texCoord");
     gl.uniform1i(gl.getUniformLocation(horizontalProgram, "u_image"), 0);
@@ -36,7 +37,8 @@ export function resizeGL(source: HTMLCanvasElement, options: ResizeOptions) {
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
-    const verticalProgram = createProgram(gl, vsSource, generateVerticalShader(options.filter))!;
+    const compiledVertical = createProgram(gl, vsSource, generateVerticalShader(options.filter))!;
+    const verticalProgram = compiledVertical.program;
     gl.useProgram(verticalProgram);
     useDefaultQuadBuffer(gl, verticalProgram, quadBuffer, "a_position", "a_texCoord");
     gl.uniform1i(gl.getUniformLocation(verticalProgram, "u_image"), 0);
@@ -51,6 +53,17 @@ export function resizeGL(source: HTMLCanvasElement, options: ResizeOptions) {
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+    gl.deleteTexture(sourceTexture);
+    gl.deleteTexture(horizontalTexture);
+    gl.deleteProgram(compiledHorizontal.program);
+    gl.deleteProgram(compiledVertical.program);
+    gl.deleteShader(compiledHorizontal.vertexShader);
+    gl.deleteShader(compiledHorizontal.fragmentShader);
+    gl.deleteShader(compiledVertical.vertexShader);
+    gl.deleteShader(compiledVertical.fragmentShader);
+    gl.deleteFramebuffer(horizontalFramebuffer);
+    gl.deleteBuffer(quadBuffer);
 
     return canvas;
 }

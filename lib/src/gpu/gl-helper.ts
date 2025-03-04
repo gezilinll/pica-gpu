@@ -1,4 +1,4 @@
-export function compileShader(gl: WebGL2RenderingContext, type: number, source: string) {
+function compileShader(gl: WebGL2RenderingContext, type: number, source: string) {
     const shader = gl.createShader(type)!;
     gl.shaderSource(shader, source);
     gl.compileShader(shader);
@@ -21,7 +21,11 @@ export function createProgram(gl: WebGL2RenderingContext, vsSource: string, fsSo
         console.error('程序连接错误：', gl.getProgramInfoLog(program));
         return null;
     }
-    return program;
+    return {
+        program,
+        vertexShader,
+        fragmentShader
+    };
 }
 
 

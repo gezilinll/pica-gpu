@@ -10,6 +10,8 @@ const pica = new Pica()
 const currentFilter = ref<'box' | 'hamming' | 'lanczos2'  | 'lanczos3' | 'mks2013'>('mks2013')
 const sourceCanvas = ref<HTMLCanvasElement | null>(null)
 const originalFileName = ref<string>('')
+const gpuTime = ref<number>(0)
+const cpuTime = ref<number>(0)
 
 const handleImageUpload = (event: Event) => {
   const input = event.target as HTMLInputElement
@@ -46,47 +48,43 @@ const handleImageUpload = (event: Event) => {
 const processImage = async () => {
   if (!sourceCanvas.value) return
 
-  const tempCanvas = sourceCanvas.value
-  const img = tempCanvas.getContext('2d')?.getImageData(0, 0, tempCanvas.width, tempCanvas.height)
-  if (!img) return
 
   // 计算目标尺寸
   const targetWidth = 480
-  const targetHeight = Math.round(targetWidth * tempCanvas.height / tempCanvas.width)
+  const targetHeight = Math.round(targetWidth * sourceCanvas.value.height / sourceCanvas.value.width)
 
   try {
-     // 左侧画布：将处理后的像素数据绘制到页面 canvas
     const canvas = canvasRef.value
     if (!canvas) return
     canvas.width = targetWidth
     canvas.height = targetHeight
 
-    resize(tempCanvas, {
+    const gpuStart = performance.now()
+    resize(sourceCanvas.value, {
       filter: currentFilter.value,
       drawToCanvas: canvas,
       targetWidth,
       targetHeight
     })
+    gpuTime.value = performance.now() - gpuStart
   } catch (error) {
     console.error('WebGL 2.0 resize failed:', error)
-    // 如果 WebGL 2.0 失败，可以在这里添加回退逻辑
   }
 
-  // 右侧画布：使用 pica 处理
   const picaCanvas = picaCanvasRef.value
   if (!picaCanvas) return
 
   picaCanvas.width = targetWidth
   picaCanvas.height = targetHeight
 
-  // 使用 pica 进行缩放
-  await pica.resize(tempCanvas, picaCanvas, {
+  const cpuStart = performance.now()
+  await pica.resize(sourceCanvas.value, picaCanvas, {
     filter: currentFilter.value
   })
+  cpuTime.value = performance.now() - cpuStart
 }
 
 const handleCanvasClick = () => {
-  // 触发文件选择
   const input = document.createElement('input')
   input.type = 'file'
   input.accept = 'image/*'
@@ -98,7 +96,6 @@ const handleCanvasClick = () => {
 
 const applyFilter = (filter: 'hamming' | 'lanczos2' | 'box' | 'lanczos3' | 'mks2013') => {
   currentFilter.value = filter
-  // 如果已经有图片，重新处理图片
   if (sourceCanvas.value) {
     processImage()
   }
@@ -107,13 +104,11 @@ const applyFilter = (filter: 'hamming' | 'lanczos2' | 'box' | 'lanczos3' | 'mks2
 const downloadImages = () => {
   if (!canvasRef.value || !picaCanvasRef.value || !originalFileName.value) return
 
-  // 下载 GPU 版本
   const gpuLink = document.createElement('a')
   gpuLink.download = `${originalFileName.value}_gpu.png`
   gpuLink.href = canvasRef.value.toDataURL('image/png')
   gpuLink.click()
 
-  // 下载 CPU 版本
   const cpuLink = document.createElement('a')
   cpuLink.download = `${originalFileName.value}_cpu.png`
   cpuLink.href = picaCanvasRef.value.toDataURL('image/png')
@@ -183,11 +178,17 @@ const downloadImages = () => {
         </div>
         <div class="canvas-section">
           <div class="canvas-item">
-            <p class="canvas-label">Pica-GPU</p>
+            <p class="canvas-label">
+              Pica-GPU
+              <span class="time-label" v-if="gpuTime > 0">{{ gpuTime.toFixed(2) }}ms</span>
+            </p>
             <canvas ref="canvasRef" class="preview-canvas" @click="handleCanvasClick"></canvas>
           </div>
           <div class="canvas-item">
-            <p class="canvas-label">Pica</p>
+            <p class="canvas-label">
+              Pica
+              <span class="time-label" v-if="cpuTime > 0">{{ cpuTime.toFixed(2) }}ms</span>
+            </p>
             <canvas ref="picaCanvasRef" class="preview-canvas" @click="handleCanvasClick"></canvas>
           </div>
         </div>
@@ -323,6 +324,17 @@ body {
 .canvas-label {
   font-size: 0.9rem;
   color: #666666;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.time-label {
+  font-size: 0.8rem;
+  color: #10b981;
+  background-color: #ecfdf5;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
 }
 
 .preview-canvas {
