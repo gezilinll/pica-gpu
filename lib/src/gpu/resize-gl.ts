@@ -1,3 +1,4 @@
+import { ResizeOptions } from "../definition";
 import { createDefaultQuadBuffer, createEmptyTexture, createFramebuffer, createProgram, createTextureFromImage, useDefaultQuadBuffer } from "./gl-helper";
 
 const vsSource =
@@ -94,9 +95,11 @@ const fsVertical = `#version 300 es
  }
  `;
 
-export function resizeGL(source: HTMLCanvasElement, targetWidth: number, targetHeight: number) {
+export function resizeGL(source: HTMLCanvasElement, options: ResizeOptions) {
     const canvas = document.createElement('canvas');
     const gl = canvas.getContext('webgl2')!;
+    const targetWidth = options.targetWidth;
+    const targetHeight = options.targetHeight;
 
     const sourceTexture = createTextureFromImage(gl, source);
     const srcWidth = source.width;

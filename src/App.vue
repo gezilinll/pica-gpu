@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { resize } from 'pica-gpu'
+import { resizeGL as resize } from 'pica-gpu'
 import Pica from 'pica'
 
 const imageUrl = ref<string | null>(null)
