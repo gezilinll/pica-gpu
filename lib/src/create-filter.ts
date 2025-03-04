@@ -3,7 +3,6 @@ const filters = {
     box: {
         win: 0.5,
         fn: function (x: number) {
-            console.log('box', x)
             if (x < 0) x = -x;
             return (x < 0.5) ? 1.0 : 0.0;
         }
@@ -12,7 +11,6 @@ const filters = {
     hamming: {
         win: 1.0,
         fn: function (x: number) {
-            console.log('hamming', x)
             if (x < 0) x = -x;
             if (x >= 1.0) { return 0.0; }
             if (x < 1.19209290E-07) { return 1.0; }
@@ -24,7 +22,6 @@ const filters = {
     lanczos2: {
         win: 2.0,
         fn: function (x: number) {
-            console.log('lanczos2', x)
             if (x < 0) x = -x;
             if (x >= 2.0) { return 0.0; }
             if (x < 1.19209290E-07) { return 1.0; }
@@ -36,7 +33,6 @@ const filters = {
     lanczos3: {
         win: 3.0,
         fn: function (x: number) {
-            console.log('lanczos3', x)
             if (x < 0) x = -x;
             if (x >= 3.0) { return 0.0; }
             if (x < 1.19209290E-07) { return 1.0; }
@@ -49,7 +45,6 @@ const filters = {
     mks2013: {
         win: 2.5,
         fn: function (x: number) {
-            console.log('mks2013', x)
             if (x < 0) x = -x;
             if (x >= 2.5) { return 0.0; }
             if (x >= 1.5) { return -0.125 * (x - 2.5) * (x - 2.5); }

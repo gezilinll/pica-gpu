@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { add, resize } from 'pica-gpu'
+import { resize } from 'pica-gpu'
 import Pica from 'pica'
 
 const imageUrl = ref<string | null>(null)
@@ -9,9 +9,6 @@ const picaCanvasRef = ref<HTMLCanvasElement | null>(null)
 const pica = new Pica()
 const currentFilter = ref<'hamming' | 'lanczos2'>('hamming')
 const sourceCanvas = ref<HTMLCanvasElement | null>(null)
-
-// 测试 add 方法
-console.log('1 + 2 =', add(1, 2))
 
 const handleImageUpload = (event: Event) => {
   const input = event.target as HTMLInputElement
@@ -54,30 +51,35 @@ const processImage = async () => {
   const targetWidth = 480
   const targetHeight = targetWidth * tempCanvas.height / tempCanvas.width
 
-  // 使用 pica-gpu 处理左侧画布
-  const pixelData = resize(tempCanvas, {
-    filter: currentFilter.value,
-    targetWidth,
-    targetHeight
-  })
+  try {
+    // 使用 WebGL 2.0 版本处理左侧画布
+    const pixelData = resize(tempCanvas, {
+      filter: currentFilter.value,
+      targetWidth,
+      targetHeight
+    })
 
-  // 左侧画布：将处理后的像素数据绘制到页面 canvas
-  const canvas = canvasRef.value
-  if (!canvas) return
-  
-  const ctx = canvas.getContext('2d')
-  if (!ctx) return
+    // 左侧画布：将处理后的像素数据绘制到页面 canvas
+    const canvas = canvasRef.value
+    if (!canvas) return
+    
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
 
-  canvas.width = targetWidth
-  canvas.height = targetHeight
+    canvas.width = targetWidth
+    canvas.height = targetHeight
 
-  // 创建 ImageData 并绘制
-  const imageData = new ImageData(
-    new Uint8ClampedArray(pixelData),
-    targetWidth,
-    targetHeight
-  )
-  ctx.putImageData(imageData, 0, 0)
+    // 创建 ImageData 并绘制
+    const imageData = new ImageData(
+      new Uint8ClampedArray(pixelData),
+      targetWidth,
+      targetHeight
+    )
+    ctx.putImageData(imageData, 0, 0)
+  } catch (error) {
+    console.error('WebGL 2.0 resize failed:', error)
+    // 如果 WebGL 2.0 失败，可以在这里添加回退逻辑
+  }
 
   // 右侧画布：使用 pica 处理
   const picaCanvas = picaCanvasRef.value
