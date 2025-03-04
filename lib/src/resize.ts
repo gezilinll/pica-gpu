@@ -1,8 +1,14 @@
-import { ResizeOptions } from "../definition";
 import { createDefaultQuadBuffer, createEmptyTexture, createFramebuffer, createProgram, createTextureFromImage, useDefaultQuadBuffer } from "./gl-helper";
 import { generateHorizontalShader, generateVerticalShader, getResizeWindow, vsSource } from "./shaders";
 
-export function resizeGL(source: HTMLCanvasElement, options: ResizeOptions) {
+export interface ResizeOptions {
+    targetWidth: number;
+    targetHeight: number;
+    drawToCanvas?: HTMLCanvasElement;
+    filter: 'box' | 'hamming' | 'lanczos2' | 'lanczos3' | 'mks2013';
+}
+
+export function resize(source: HTMLCanvasElement, options: ResizeOptions) {
     const canvas = options.drawToCanvas ?? document.createElement('canvas');
     const gl = canvas.getContext('webgl2')!;
     const targetWidth = Math.round(options.targetWidth);

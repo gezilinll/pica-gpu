@@ -1,2 +1,1 @@
-export * from './cpu/resize-cpu';
-export * from './gpu/resize-gl';
+export * from './resize';

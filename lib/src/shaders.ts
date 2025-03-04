@@ -1,4 +1,4 @@
-import { ResizeOptions } from "../definition";
+import { ResizeOptions } from "./resize";
 
 export const vsSource =
     `#version 300 es
