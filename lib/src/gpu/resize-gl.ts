@@ -3,7 +3,7 @@ import { createDefaultQuadBuffer, createEmptyTexture, createFramebuffer, createP
 import { generateHorizontalShader, generateVerticalShader, getResizeWindow, vsSource } from "./shaders";
 
 export function resizeGL(source: HTMLCanvasElement, options: ResizeOptions) {
-    const canvas = document.createElement('canvas');
+    const canvas = options.drawToCanvas ?? document.createElement('canvas');
     const gl = canvas.getContext('webgl2')!;
     const targetWidth = Math.round(options.targetWidth);
     const targetHeight = Math.round(options.targetHeight);
@@ -36,8 +36,6 @@ export function resizeGL(source: HTMLCanvasElement, options: ResizeOptions) {
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
-    const verticalTexture = createEmptyTexture(gl, targetWidth, targetHeight);
-    const verticalFramebuffer = createFramebuffer(gl, verticalTexture);
     const verticalProgram = createProgram(gl, vsSource, generateVerticalShader(options.filter))!;
     gl.useProgram(verticalProgram);
     useDefaultQuadBuffer(gl, verticalProgram, quadBuffer, "a_position", "a_texCoord");
@@ -49,12 +47,10 @@ export function resizeGL(source: HTMLCanvasElement, options: ResizeOptions) {
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, horizontalTexture);
     gl.viewport(0, 0, targetWidth, targetHeight);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, verticalFramebuffer);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
-    const pixels = new Uint8Array(targetWidth * targetHeight * 4);
-    gl.readPixels(0, 0, targetWidth, targetHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-    return pixels;
+    return canvas;
 }

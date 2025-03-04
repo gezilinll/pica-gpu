@@ -55,29 +55,18 @@ const processImage = async () => {
   const targetHeight = Math.round(targetWidth * tempCanvas.height / tempCanvas.width)
 
   try {
-    const pixelData = resize(tempCanvas, {
-      filter: currentFilter.value,
-      targetWidth,
-      targetHeight
-    })
-
-    // 左侧画布：将处理后的像素数据绘制到页面 canvas
+     // 左侧画布：将处理后的像素数据绘制到页面 canvas
     const canvas = canvasRef.value
     if (!canvas) return
-    
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
     canvas.width = targetWidth
     canvas.height = targetHeight
 
-    // 创建 ImageData 并绘制
-    const imageData = new ImageData(
-      new Uint8ClampedArray(pixelData),
+    resize(tempCanvas, {
+      filter: currentFilter.value,
+      drawToCanvas: canvas,
       targetWidth,
       targetHeight
-    )
-    ctx.putImageData(imageData, 0, 0)
+    })
   } catch (error) {
     console.error('WebGL 2.0 resize failed:', error)
     // 如果 WebGL 2.0 失败，可以在这里添加回退逻辑
