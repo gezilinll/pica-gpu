@@ -24,10 +24,9 @@ export function createProgram(gl: WebGL2RenderingContext, vsSource: string, fsSo
     return {
         program,
         vertexShader,
-        fragmentShader
+        fragmentShader,
     };
 }
-
 
 export function createTextureFromImage(gl: WebGL2RenderingContext, image: TexImageSource) {
     const texture = gl.createTexture();
@@ -37,17 +36,14 @@ export function createTextureFromImage(gl: WebGL2RenderingContext, image: TexIma
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,
-        gl.UNSIGNED_BYTE, image);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
     return texture;
 }
 
 export function createEmptyTexture(gl: WebGL2RenderingContext, width: number, height: number) {
     const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
-        width, height, 0, gl.RGBA,
-        gl.UNSIGNED_BYTE, null);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     return texture;
@@ -65,16 +61,19 @@ export function createDefaultQuadBuffer(gl: WebGL2RenderingContext) {
     gl.bindBuffer(gl.ARRAY_BUFFER, quadBuffer);
     const quadVertices = new Float32Array([
         // x, y, u, v
-        -1, -1, 0, 0,
-        1, -1, 1, 0,
-        -1, 1, 0, 1,
-        1, 1, 1, 1,
+        -1, -1, 0, 0, 1, -1, 1, 0, -1, 1, 0, 1, 1, 1, 1, 1,
     ]);
     gl.bufferData(gl.ARRAY_BUFFER, quadVertices, gl.STATIC_DRAW);
     return quadBuffer;
 }
 
-export function useDefaultQuadBuffer(gl: WebGL2RenderingContext, program: WebGLProgram, quadBuffer: WebGLBuffer, position: string, textCoord: string) {
+export function useDefaultQuadBuffer(
+    gl: WebGL2RenderingContext,
+    program: WebGLProgram,
+    quadBuffer: WebGLBuffer,
+    position: string,
+    textCoord: string
+) {
     const posLoc = gl.getAttribLocation(program, position);
     const texLoc = gl.getAttribLocation(program, textCoord);
     gl.bindBuffer(gl.ARRAY_BUFFER, quadBuffer);

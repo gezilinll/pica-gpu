@@ -1,0 +1,72 @@
+{
+    "editor.codeActionsOnSave": {
+        "source.addMissingImports": "explicit",
+        "source.fixAll.eslint": "explicit",
+        "source.fixAll.stylelint": "explicit",
+        "source.fixAll.markdownlint": "explicit"
+    },
+    "eslint.codeActionsOnSave.rules": ["!@typescript-eslint/no-unnecessary-condition", "*"],
+    "editor.formatOnSave": true,
+    "npm.packageManager": "pnpm",
+    "css.validate": false,
+    "less.validate": false,
+    "stylelint.enable": true,
+    "stylelint.packageManager": "pnpm",
+    "stylelint.validate": ["css", "less", "html", "vue"],
+    "search.followSymlinks": false,
+    "eslint.enable": true,
+    "eslint.runtime": "node",
+    "eslint.validate": [
+        "javascript",
+        "typescript",
+        "typescript",
+        "typescriptreact",
+        "vue",
+        "json",
+        "jsonc",
+        "html"
+    ],
+
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[vue]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[html]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[css]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[less]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[markdown]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[xml]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[yaml]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[svg]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
+}

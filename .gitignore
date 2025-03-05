@@ -14,8 +14,6 @@ dist-ssr
 *.local
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
 .idea
 .DS_Store
 *.suo
@@ -34,7 +32,7 @@ coverage
 
 # Cache
 .cache
-.temp 
+.temp
 
 *.tsbuildinfo
 vite.config.js

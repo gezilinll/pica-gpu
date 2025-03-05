@@ -1,28 +1,28 @@
 {
-  "name": "pica-gpu-root",
-  "private": true,
-  "version": "0.0.1",
-  "type": "module",
-  "workspaces": [
-    "lib"
-  ],
-  "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc -b && vite build",
-    "preview": "vite preview",
-    "build:lib": "cd lib && pnpm build",
-    "dev:lib": "cd lib && pnpm dev"
-  },
-  "dependencies": {
-    "pica": "^9.0.1",
-    "pica-gpu": "workspace:*",
-    "vue": "^3.4.15"
-  },
-  "devDependencies": {
-    "@types/pica": "^9.0.5",
-    "@vitejs/plugin-vue": "^5.0.3",
-    "typescript": "^5.2.2",
-    "vite": "^6.2.0",
-    "vue-tsc": "^2.2.8"
-  }
+    "name": "pica-gpu-root",
+    "private": true,
+    "version": "0.0.1",
+    "type": "module",
+    "workspaces": [
+        "lib"
+    ],
+    "scripts": {
+        "dev": "vite",
+        "build": "vue-tsc -b && vite build",
+        "preview": "vite preview",
+        "build:lib": "cd lib && pnpm build",
+        "dev:lib": "cd lib && pnpm dev"
+    },
+    "dependencies": {
+        "pica": "^9.0.1",
+        "pica-gpu": "workspace:*",
+        "vue": "^3.4.15"
+    },
+    "devDependencies": {
+        "@types/pica": "^9.0.5",
+        "@vitejs/plugin-vue": "^5.0.3",
+        "typescript": "^5.2.2",
+        "vite": "^6.2.0",
+        "vue-tsc": "^2.2.8"
+    }
 }

@@ -1,41 +1,41 @@
 {
-  "name": "pica-gpu",
-  "version": "0.0.4s",
-  "type": "module",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ],
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "prebuild": "rm -rf dist",
-    "prepublishOnly": "cp ../README.md . && cp ../LICENSE . && pnpm build",
-    "publish": "npm publish --access public"
-  },
-  "keywords": [
-    "image",
-    "resize",
-    "webgl",
-    "gpu",
-    "canvas",
-    "typescript"
-  ],
-  "author": "gezilinll",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/gezilinll/pica-gpu.git"
-  },
-  "bugs": {
-    "url": "https://github.com/gezilinll/pica-gpu/issues"
-  },
-  "homepage": "https://github.com/gezilinll/pica-gpu#readme",
-  "devDependencies": {
-    "typescript": "^5.2.2"
-  }
-} 
+    "name": "pica-gpu",
+    "version": "0.0.4s",
+    "type": "module",
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "prebuild": "rm -rf dist",
+        "prepublishOnly": "cp ../README.md . && cp ../LICENSE . && pnpm build",
+        "publish": "npm publish --access public"
+    },
+    "keywords": [
+        "image",
+        "resize",
+        "webgl",
+        "gpu",
+        "canvas",
+        "typescript"
+    ],
+    "author": "gezilinll",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/gezilinll/pica-gpu.git"
+    },
+    "bugs": {
+        "url": "https://github.com/gezilinll/pica-gpu/issues"
+    },
+    "homepage": "https://github.com/gezilinll/pica-gpu#readme",
+    "devDependencies": {
+        "typescript": "^5.2.2"
+    }
+}

@@ -65,10 +65,10 @@ resize(source, {
 Resize image from one canvas (or image) to another. Sizes are
 taken from source and destination objects.
 
-- __from__ - source, can be `Canvas`, `Image` or `ImageBitmap`.
-- __to__ - destination canvas, its size is supposed to be non-zero.
-- __options__ - quality (number) or object:
-  - __filter__ - filter name (Default - `mks2013`). See [resize_filter_info.js](https://github.com/gezilinll/pica-gpu/blob/master/lib/src/shaders.ts) for details. `mks2013` does both resize and sharpening, it's optimal and not recommended to change.
-- __throw__ When an error occurs, an exception containing the corresponding information will be thrown.
+- **from** - source, can be `Canvas`, `Image` or `ImageBitmap`.
+- **to** - destination canvas, its size is supposed to be non-zero.
+- **options** - quality (number) or object:
+  - **filter** - filter name (Default - `mks2013`). See [resize_filter_info.js](https://github.com/gezilinll/pica-gpu/blob/master/lib/src/shaders.ts) for details. `mks2013` does both resize and sharpening, it's optimal and not recommended to change.
+- **throw** When an error occurs, an exception containing the corresponding information will be thrown.
 
-__(!)__ Because the target canvas must use a WebGL context, no other context type should be requested on it in advance. Otherwise, an error may occur, preventing the resize from working properly.
+**(!)** Because the target canvas must use a WebGL context, no other context type should be requested on it in advance. Otherwise, an error may occur, preventing the resize from working properly.
