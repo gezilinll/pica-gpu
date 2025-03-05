@@ -19,7 +19,11 @@ export interface ResizeOptions {
     filter: 'box' | 'hamming' | 'lanczos2' | 'lanczos3' | 'mks2013';
 }
 
-export function resize(from: HTMLCanvasElement, to: HTMLCanvasElement, options: ResizeOptions) {
+export function resize(
+    from: ImageBitmap | ImageData | HTMLImageElement | HTMLCanvasElement | OffscreenCanvas,
+    to: HTMLCanvasElement,
+    options: ResizeOptions
+) {
     if (from.width === 0 || from.height === 0) {
         throw new Error('source canvas width or height is 0');
     }

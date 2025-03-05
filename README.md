@@ -65,7 +65,7 @@ resize(from, to,
 Resize image from one canvas (or image) to another. Sizes are
 taken from source and destination objects.
 
-- **from** - source, can be `Canvas`, `Image` or `ImageBitmap`.
+- **from** - source, can be `HTMLCanvasElement`, `HTMLImageElement`, `ImageBitmap` `ImageData`, `OffscreenCanvas`.
 - **to** - destination canvas, its size is supposed to be non-zero.
 - **options** - quality (number) or object:
   - **filter** - filter name (Default - `mks2013`). See [resize_filter_info.js](https://github.com/gezilinll/pica-gpu/blob/master/lib/src/shaders.ts) for details. `mks2013` does both resize and sharpening, it's optimal and not recommended to change.
