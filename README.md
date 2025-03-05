@@ -50,11 +50,11 @@ npm install pica-gpu
 ```
 import { resize } from 'pica-gpu'
 
-resize(source, {
+resize(from, to,
+{
     filter,
     targetWidth,
     targetHeight,
-    ...
 })
 ```
 
