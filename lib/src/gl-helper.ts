@@ -5,7 +5,7 @@ function compileShader(gl: WebGL2RenderingContext, type: number, source: string)
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
         console.error('compile shader error:', gl.getShaderInfoLog(shader));
         gl.deleteShader(shader);
-        return null;
+        throw new Error('compile shader error');
     }
     return shader;
 }
@@ -19,7 +19,7 @@ export function createProgram(gl: WebGL2RenderingContext, vsSource: string, fsSo
     gl.linkProgram(program);
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
         console.error('link program error:', gl.getProgramInfoLog(program));
-        return null;
+        throw new Error('link program error');
     }
     return {
         program,
