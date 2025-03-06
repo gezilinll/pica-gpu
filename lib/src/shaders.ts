@@ -129,7 +129,7 @@ const windows = {
     hamming: 1.0,
     lanczos2: 2.0,
     lanczos3: 3.0,
-    mks2013: 2.5,
+    mks2013: 8.0,
 };
 
 export function generateHorizontalShader(filterFunction: ResizeOptions['filter']) {
